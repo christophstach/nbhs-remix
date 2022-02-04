@@ -1,9 +1,9 @@
 import { Link } from "remix";
 
-import { FunctionComponent, useEffect, useState } from "react";
+import { FunctionComponent, useState } from "react";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
-import { CircularProgress, Collapse, Divider, ListItemButton } from "@mui/material";
+import { Collapse, Divider, ListItemButton } from "@mui/material";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
 import ListItemText from "@mui/material/ListItemText";
@@ -13,44 +13,22 @@ import IconExpandMore from "@mui/icons-material/ExpandMore";
 import HouseIcon from "@mui/icons-material/House";
 import PlaylistAddIcon from "@mui/icons-material/PlaylistAdd";
 import PlaylistAddCheckIcon from "@mui/icons-material/PlaylistAddCheck";
-
-import Box from "@mui/material/Box";
-import * as permission from "../../utils/permission";
+import { Project, User, UserRole } from "@prisma/client";
 
 
-const SideNav: FunctionComponent = () => {
-    const [userProjects, setUserProjects] = useState([] as any[])
+interface SideNavProps {
+    user: Omit<User & { projects: Project[] }, 'passwordHash'>
+}
+
+const SideNav: FunctionComponent<SideNavProps> = (props) => {
+    const user = props.user;
+
+    const [userProjects, setUserProjects] = useState([] as any[]);
     const [formManagementOpen, setFormManagementOpen] = useState(false);
     const [formSubmissionsOpen, setFormSubmissionsOpen] = useState(false);
     const [formApprovalsOpen, setFormApprovalsOpen] = useState(false);
     const [statisticsOpen, setStatisticsOpen] = useState(false);
-    const [loading, setLoading] = useState(true);
 
-
-    const [isAdmin, setIsAdmin] = useState(false);
-    const [isProjectResponsible, setIsProjectResponsible] = useState(false);
-    const [isDepartmentResponsible, setIsDepartmentResponsible] = useState(false);
-    const [isPublicRelationResponsible, setIsPublicRelationResponsible] = useState(false);
-    const [isExecutiveBoard, setIsExecutiveBoard] = useState(false);
-
-
-    useEffect(() => {
-        setLoading(true);
-
-        setIsAdmin(permission.isAdmin());
-        setIsProjectResponsible(permission.isProjectManager());
-        setIsDepartmentResponsible(permission.isAreaManager());
-        setIsPublicRelationResponsible(permission.isPublicRelationManager());
-        setIsExecutiveBoard(permission.isExecutiveBoard());
-
-        /*getUserProjects()
-            .then((response) => {
-                setUserProjects(response.data.projects);
-
-                setLoading(false);
-            })
-         */
-    }, []);
 
     function handleOpenCloseFormManagement() {
         setFormManagementOpen(!formManagementOpen);
@@ -71,7 +49,7 @@ const SideNav: FunctionComponent = () => {
     return (
         <List>
             {
-                isAdmin ? (
+                user.roles.includes(UserRole.ADMIN) ? (
                     <ListItem disablePadding>
                         <ListItemButton component={Link} to="/users">
                             <ListItemIcon>
@@ -84,7 +62,7 @@ const SideNav: FunctionComponent = () => {
             }
 
             {
-                isAdmin ? (
+                user.roles.includes(UserRole.ADMIN) ? (
                     <>
                         <ListItem disablePadding>
                             <ListItemButton onClick={handleOpenCloseFormManagement}>
@@ -127,7 +105,7 @@ const SideNav: FunctionComponent = () => {
             }
 
             {
-                isProjectResponsible ? (
+                user.roles.includes(UserRole.PROJECT_MANAGER) ? (
                     <>
                         <ListItem disablePadding>
                             <ListItemButton onClick={handleOpenCloseFormSubmissions}>
@@ -141,28 +119,23 @@ const SideNav: FunctionComponent = () => {
 
                         <Collapse in={formSubmissionsOpen} timeout="auto" unmountOnExit>
                             <Divider />
-                            {loading ? (
-                                <Box component="div"
-                                     sx={{padding: "8px 8px 8px 72px", display: "flex", alignItems: "center"}}>
-                                    <CircularProgress size={20} />
-                                </Box>
-                            ) : (
-                                <List component="div" disablePadding>
-                                    {
-                                        userProjects.map(userProject => {
-                                            return (
-                                                <ListItem key={userProject.project} disablePadding>
-                                                    <ListItemButton
-                                                        component={Link}
-                                                        to={`/forms/submissions/${userProject.project}`}>
-                                                        <ListItemText inset primary={userProject.name} />
-                                                    </ListItemButton>
-                                                </ListItem>
-                                            )
-                                        })
-                                    }
-                                </List>
-                            )}
+
+                            <List component="div" disablePadding>
+                                {
+                                    user.projects.map(project => {
+                                        return (
+                                            <ListItem key={project.id} disablePadding>
+                                                <ListItemButton
+                                                    component={Link}
+                                                    to={`/forms/submissions/${project.id}`}>
+                                                    <ListItemText inset primary={project.name} />
+                                                </ListItemButton>
+                                            </ListItem>
+                                        )
+                                    })
+                                }
+                            </List>
+
                             <Divider />
                         </Collapse>
                     </>
@@ -170,7 +143,7 @@ const SideNav: FunctionComponent = () => {
             }
 
             {
-                isExecutiveBoard || isDepartmentResponsible ? (
+                user.roles.includes(UserRole.EXECUTIVE) || user.roles.includes(UserRole.AREA_MANAGER) ? (
                     <>
                         <ListItem disablePadding>
                             <ListItemButton onClick={handleOpenCloseFormApprovals}>
@@ -184,28 +157,22 @@ const SideNav: FunctionComponent = () => {
 
                         <Collapse in={formApprovalsOpen} timeout="auto" unmountOnExit>
                             <Divider />
-                            {loading ? (
-                                <Box component="div"
-                                     sx={{padding: "8px 8px 8px 72px", display: "flex", alignItems: "center"}}>
-                                    <CircularProgress size={20} />
-                                </Box>
-                            ) : (
-                                <List component="div" disablePadding>
-                                    {
-                                        userProjects.map(userProject => {
-                                            return (
-                                                <ListItem key={userProject.project} disablePadding>
-                                                    <ListItemButton
-                                                        component={Link}
-                                                        to={`/forms/approvals/${userProject.project}`}>
-                                                        <ListItemText inset primary={userProject.name} />
-                                                    </ListItemButton>
-                                                </ListItem>
-                                            )
-                                        })
-                                    }
-                                </List>
-                            )}
+                            <List component="div" disablePadding>
+                                {
+                                    userProjects.map(userProject => {
+                                        return (
+                                            <ListItem key={userProject.project} disablePadding>
+                                                <ListItemButton
+                                                    component={Link}
+                                                    to={`/forms/approvals/${userProject.project}`}>
+                                                    <ListItemText inset primary={userProject.name} />
+                                                </ListItemButton>
+                                            </ListItem>
+                                        )
+                                    })
+                                }
+                            </List>
+
                             <Divider />
                         </Collapse>
                     </>
@@ -213,7 +180,7 @@ const SideNav: FunctionComponent = () => {
             }
 
             {
-                isExecutiveBoard || isPublicRelationResponsible || isDepartmentResponsible ? (
+                user.roles.includes(UserRole.EXECUTIVE) || user.roles.includes(UserRole.PR_MANAGER) || user.roles.includes(UserRole.AREA_MANAGER) ? (
                     <>
                         <ListItem disablePadding>
                             <ListItemButton onClick={handleOpenCloseStatistics}>

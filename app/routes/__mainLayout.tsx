@@ -6,23 +6,36 @@ import CssBaseline from "@mui/material/CssBaseline";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
-import { Button, Divider, IconButton, Menu, MenuItem } from "@mui/material";
+import { Button, Divider, Menu, MenuItem } from "@mui/material";
 import Drawer from "@mui/material/Drawer";
 import SideNav from "~/components/elements/SideNav";
 import Copyright from "~/components/elements/Copyright";
 import { Link, LoaderFunction, Outlet, useLoaderData } from "remix";
-import { requireUser } from "~/utils/session.server";
-import { User } from "@prisma/client";
+import { requireUserId, signOut } from "~/utils/session.server";
+import { Project, User } from "@prisma/client";
+import { db, exclude } from "~/utils/db.server";
 
 const drawerWidth: number = 300;
 const theme = createTheme();
 
 export let loader: LoaderFunction = async ({request}) => {
-    return await requireUser(request);
+    const userId = await requireUserId(request);
+    const user = await db.user.findUnique({
+        where: {id: userId},
+        include: {
+            projects: true
+        }
+    });
+
+    if (!user) {
+        return await signOut(request)
+    }
+
+    return exclude(user, 'passwordHash');
 };
 
 export default function MainLayoutHiddenRoute() {
-    const user = useLoaderData<Omit<User, 'passwordHash'>>();
+    const user = useLoaderData<Omit<User & { projects: Project[] }, 'passwordHash'>>();
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
     const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -86,7 +99,7 @@ export default function MainLayoutHiddenRoute() {
                 >
                     <Toolbar />
                     <Box sx={{overflow: "auto"}}>
-                        <SideNav />
+                        <SideNav user={user} />
                     </Box>
                 </Drawer>
                 <Box component="main" sx={{flexGrow: 1, p: 3}}>

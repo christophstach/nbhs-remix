@@ -6,7 +6,7 @@ import { ActionFunction, Form, MetaFunction, useActionData, useTransition } from
 import LoadingButton from "@mui/lab/LoadingButton";
 import SendIcon from "@mui/icons-material/Send";
 import { db } from "~/utils/db.server";
-import { createUserSession } from "~/utils/session.server";
+import { signIn } from "~/utils/session.server";
 
 export const meta: MetaFunction = () => {
     return {
@@ -41,7 +41,7 @@ export const action: ActionFunction = async ({request}) => {
 
         if (user && user.passwordHash) {
             if (await bcrypt.compare(password, user.passwordHash)) {
-                return createUserSession(user.id, "/");
+                return signIn(user.id, "/");
             }
         }
     }

@@ -2,22 +2,68 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-    provider        = "prisma-client-js"
-    previewFeatures = ["mongoDb"]
+  provider        = "prisma-client-js"
+  previewFeatures = ["mongoDb"]
 }
 
 datasource db {
-    provider = "mongodb"
-    url      = env("DATABASE_URL")
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
 }
 
-
 model User {
-    id              String      @id @default(dbgenerated()) @map("_id") @db.ObjectId
-    createdAt       DateTime    @default(now())
-    updatedAt       DateTime    @updatedAt
-    email           String      @unique
-    passwordHash    String?
-    firstName       String?
-    lastName        String?
+  id           String     @id @default(dbgenerated()) @map("_id") @db.ObjectId
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  email        String     @unique
+  roles        UserRole[]
+  projects     Project[]
+  areas        Area[]
+  passwordHash String?
+  firstName    String?
+  lastName     String?
+}
+
+enum UserRole {
+  ADMIN
+  EXECUTIVE
+  AREA_MANAGER
+  PROJECT_MANAGER
+  PR_MANAGER
+}
+
+model Area {
+  id String @id @default(dbgenerated()) @map("_id") @db.ObjectId
+
+  manager       User?     @relation(fields: [managerUserId], references: [id])
+  managerUserId String?   @db.ObjectId
+  projects      Project[]
+  name          String
+  comment       String?
+}
+
+model Project {
+  id            String     @id @default(dbgenerated()) @map("_id") @db.ObjectId
+  name          String
+  area          Area?      @relation(fields: [areaId], references: [id])
+  areaId        String?    @db.ObjectId
+  manager       User?      @relation(fields: [managerUserId], references: [id])
+  managerUserId String?    @db.ObjectId
+  categories    Category[]
+  comment       String?
+}
+
+model Category {
+  id            String        @id @default(dbgenerated()) @map("_id") @db.ObjectId
+  project       Project?      @relation(fields: [projectId], references: [id])
+  projectId     String?
+  subCategories SubCategory[]
+  name          String
+}
+
+model SubCategory {
+  id         String    @id @default(dbgenerated()) @map("_id") @db.ObjectId
+  category   Category? @relation(fields: [categoryId], references: [id])
+  categoryId String?
+  name       String
 }
