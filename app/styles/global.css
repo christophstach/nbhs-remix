@@ -3,7 +3,8 @@ body {
     padding: 0;
 }
 
-.AuthSignInRoute__nbhs_logo {
+.AuthSignInRoute__nbhs_logo,
+.AuthSignOutRoute__nbhs_logo {
     width: 286px;
     height: 90px;
 }

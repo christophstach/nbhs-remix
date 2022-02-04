@@ -1,24 +1,20 @@
-import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { Outlet } from "remix";
 import Container from "@mui/material/Container";
 import CssBaseline from "@mui/material/CssBaseline";
-
-import { FunctionComponent } from "react";
-import Copyright from "../elements/Copyright";
+import Copyright from "~/components/elements/Copyright";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
 
 const theme = createTheme();
 
-
-const AuthLayout: FunctionComponent = ({children}) => {
+export default function AuthLayoutHiddenRoute() {
     return (
         <ThemeProvider theme={theme}>
+            <CssBaseline />
+
             <Container component="main" maxWidth="xs">
-                <CssBaseline />
-                {children}
+                <Outlet />
                 <Copyright />
             </Container>
         </ThemeProvider>
     );
 }
-
-export default AuthLayout;
-

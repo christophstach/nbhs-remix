@@ -1,24 +1,21 @@
+import { AccountCircle } from "@mui/icons-material";
 import * as React from "react";
-import { FunctionComponent } from "react";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Box from "@mui/material/Box";
-import Drawer from "@mui/material/Drawer";
-import AppBar from "@mui/material/AppBar";
 import CssBaseline from "@mui/material/CssBaseline";
+import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
-
-import { createTheme, ThemeProvider } from "@mui/material/styles";
-import Copyright from "../elements/Copyright";
 import { Divider, IconButton, Menu, MenuItem } from "@mui/material";
-import { AccountCircle } from "@mui/icons-material";
-import SideNav from "../elements/SideNav";
-
+import Drawer from "@mui/material/Drawer";
+import SideNav from "~/components/elements/SideNav";
+import Copyright from "~/components/elements/Copyright";
+import { Link, Outlet } from "remix";
 
 const drawerWidth: number = 300;
-const mdTheme = createTheme();
+const theme = createTheme();
 
-
-const MainLayout: FunctionComponent = ({children}) => {
+export default function MainLayoutHiddenRoute() {
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
     const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -30,13 +27,14 @@ const MainLayout: FunctionComponent = ({children}) => {
     };
 
     return (
-        <ThemeProvider theme={mdTheme}>
+        <ThemeProvider theme={theme}>
+            <CssBaseline />
+
             <Box sx={{display: "flex"}}>
-                <CssBaseline />
                 <AppBar position="fixed" sx={{zIndex: (theme) => theme.zIndex.drawer + 1}}>
                     <Toolbar sx={{gap: "1rem"}}>
                         <Typography variant="h6" noWrap component="div" sx={{flexGrow: 1}}>
-                            IS: NBHS
+                            NBHS
                         </Typography>
 
                         <div id="top-nav-portal" />
@@ -62,8 +60,8 @@ const MainLayout: FunctionComponent = ({children}) => {
                                 open={Boolean(anchorEl)}
                                 onClose={handleClose}
                             >
-                                <MenuItem component="a" href="/profile">Profil</MenuItem>
-                                <MenuItem component="a" href="/auth/sign-out">Ausloggen</MenuItem>
+                                <MenuItem component={Link} to="/profile">Profil</MenuItem>
+                                <MenuItem component={Link} to="/auth/sign-out">Ausloggen</MenuItem>
                             </Menu>
                         </div>
 
@@ -84,12 +82,10 @@ const MainLayout: FunctionComponent = ({children}) => {
                 </Drawer>
                 <Box component="main" sx={{flexGrow: 1, p: 3}}>
                     <Toolbar />
-                    {children}
+                    <Outlet />
                     <Copyright />
                 </Box>
             </Box>
         </ThemeProvider>
     );
 }
-
-export default MainLayout;

@@ -15,7 +15,7 @@ import PlaylistAddIcon from "@mui/icons-material/PlaylistAdd";
 import PlaylistAddCheckIcon from "@mui/icons-material/PlaylistAddCheck";
 
 import Box from "@mui/material/Box";
-import * as permission from "../../helpers/permission";
+import * as permission from "../../utils/permission";
 
 
 const SideNav: FunctionComponent = () => {
@@ -38,9 +38,9 @@ const SideNav: FunctionComponent = () => {
         setLoading(true);
 
         setIsAdmin(permission.isAdmin());
-        setIsProjectResponsible(permission.isProjectResponsible());
-        setIsDepartmentResponsible(permission.isDepartmentResponsible());
-        setIsPublicRelationResponsible(permission.isPublicRelationResponsible());
+        setIsProjectResponsible(permission.isProjectManager());
+        setIsDepartmentResponsible(permission.isAreaManager());
+        setIsPublicRelationResponsible(permission.isPublicRelationManager());
         setIsExecutiveBoard(permission.isExecutiveBoard());
 
         /*getUserProjects()
@@ -73,14 +73,12 @@ const SideNav: FunctionComponent = () => {
             {
                 isAdmin ? (
                     <ListItem disablePadding>
-                        <Link to="/users">
-                            <ListItemButton component="a">
-                                <ListItemIcon>
-                                    <PeopleAltIcon />
-                                </ListItemIcon>
-                                <ListItemText primary="Benutzer" />
-                            </ListItemButton>
-                        </Link>
+                        <ListItemButton component={Link} to="/users">
+                            <ListItemIcon>
+                                <PeopleAltIcon />
+                            </ListItemIcon>
+                            <ListItemText primary="Benutzer" />
+                        </ListItemButton>
                     </ListItem>
                 ) : <></>
             }
@@ -102,32 +100,24 @@ const SideNav: FunctionComponent = () => {
                             <Divider />
                             <List component="div" disablePadding>
                                 <ListItem disablePadding>
-                                    <Link to="/areas">
-                                        <ListItemButton component="a">
-                                            <ListItemText inset primary="Bereiche verwalten" />
-                                        </ListItemButton>
-                                    </Link>
+                                    <ListItemButton component={Link} to="/areas">
+                                        <ListItemText inset primary="Bereiche verwalten" />
+                                    </ListItemButton>
                                 </ListItem>
                                 <ListItem disablePadding>
-                                    <Link to="/projects">
-                                        <ListItemButton component="a">
-                                            <ListItemText inset primary="Projekte verwalten" />
-                                        </ListItemButton>
-                                    </Link>
+                                    <ListItemButton component={Link} to="/projects">
+                                        <ListItemText inset primary="Projekte verwalten" />
+                                    </ListItemButton>
                                 </ListItem>
                                 <ListItem disablePadding>
-                                    <Link to="/categories">
-                                        <ListItemButton component="a">
-                                            <ListItemText inset primary="Kategorien verwalten" />
-                                        </ListItemButton>
-                                    </Link>
+                                    <ListItemButton component={Link} to="/categories">
+                                        <ListItemText inset primary="Kategorien verwalten" />
+                                    </ListItemButton>
                                 </ListItem>
                                 <ListItem disablePadding>
-                                    <Link to="/subcategories">
-                                        <ListItemButton component="a">
-                                            <ListItemText inset primary="Unterkategorien verwalten" />
-                                        </ListItemButton>
-                                    </Link>
+                                    <ListItemButton component={Link} to="/subcategories">
+                                        <ListItemText inset primary="Unterkategorien verwalten" />
+                                    </ListItemButton>
                                 </ListItem>
                             </List>
                             <Divider />
@@ -162,11 +152,11 @@ const SideNav: FunctionComponent = () => {
                                         userProjects.map(userProject => {
                                             return (
                                                 <ListItem key={userProject.project} disablePadding>
-                                                    <Link to={`/forms/submissions/${userProject.project}`}>
-                                                        <ListItemButton component="a">
-                                                            <ListItemText inset primary={userProject.name} />
-                                                        </ListItemButton>
-                                                    </Link>
+                                                    <ListItemButton
+                                                        component={Link}
+                                                        to={`/forms/submissions/${userProject.project}`}>
+                                                        <ListItemText inset primary={userProject.name} />
+                                                    </ListItemButton>
                                                 </ListItem>
                                             )
                                         })
@@ -205,11 +195,11 @@ const SideNav: FunctionComponent = () => {
                                         userProjects.map(userProject => {
                                             return (
                                                 <ListItem key={userProject.project} disablePadding>
-                                                    <Link to={`/forms/approvals/${userProject.project}`}>
-                                                        <ListItemButton component="a">
-                                                            <ListItemText inset primary={userProject.name} />
-                                                        </ListItemButton>
-                                                    </Link>
+                                                    <ListItemButton
+                                                        component={Link}
+                                                        to={`/forms/approvals/${userProject.project}`}>
+                                                        <ListItemText inset primary={userProject.name} />
+                                                    </ListItemButton>
                                                 </ListItem>
                                             )
                                         })
@@ -240,28 +230,22 @@ const SideNav: FunctionComponent = () => {
                             <List component="div" disablePadding>
 
                                 <ListItem disablePadding>
-                                    <Link to="/statistics/first-statistic">
-                                        <ListItemButton component="a">
-                                            <ListItemText inset primary="Statistik 1" />
-                                        </ListItemButton>
-                                    </Link>
+                                    <ListItemButton component={Link} to="/statistics/first-statistic">
+                                        <ListItemText inset primary="Statistik 1" />
+                                    </ListItemButton>
                                 </ListItem>
 
                                 <ListItem disablePadding>
-                                    <Link to="/statistics/2">
-                                        <ListItemButton component="a">
-                                            <ListItemText inset primary="Statistik 2" />
-                                        </ListItemButton>
-                                    </Link>
+                                    <ListItemButton component={Link} to="/statistics/2">
+                                        <ListItemText inset primary="Statistik 2" />
+                                    </ListItemButton>
                                 </ListItem>
 
 
                                 <ListItem disablePadding>
-                                    <Link to="/statistics/3">
-                                        <ListItemButton component="a">
-                                            <ListItemText inset primary="Statistik 3" />
-                                        </ListItemButton>
-                                    </Link>
+                                    <ListItemButton component={Link} to="/statistics/3">
+                                        <ListItemText inset primary="Statistik 3" />
+                                    </ListItemButton>
                                 </ListItem>
                             </List>
                         </Collapse>
