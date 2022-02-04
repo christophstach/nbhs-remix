@@ -27,6 +27,16 @@ const storage = createCookieSessionStorage({
     }
 });
 
+function exclude<User, Key extends keyof User>(
+    user: User,
+    ...keys: Key[]
+): Omit<User, Key> {
+    for (let key of keys) {
+        delete user[key];
+    }
+    return user;
+}
+
 export async function createUserSession(
     userId: string,
     redirectTo: string
@@ -41,12 +51,9 @@ export async function createUserSession(
     });
 }
 
-export function getUserSession(request: Request) {
-    return storage.getSession(request.headers.get("Cookie"));
-}
 
 export async function getUserId(request: Request) {
-    const session = await getUserSession(request);
+    const session = await storage.getSession(request.headers.get("Cookie"));
     const userId = session.get("userId");
 
     if (!userId || typeof userId !== "string") {
@@ -60,7 +67,7 @@ export async function requireUserId(
     request: Request,
     redirectTo: string = new URL(request.url).pathname
 ) {
-    const session = await getUserSession(request);
+    const session = await storage.getSession(request.headers.get("Cookie"));
     const userId = session.get("userId");
 
     if (!userId || typeof userId !== "string") {
@@ -86,8 +93,25 @@ export async function getUser(request: Request) {
             where: {id: userId}
         });
     } catch {
-        throw signOut(request);
+        return signOut(request);
     }
+}
+
+export async function requireUser(request: Request) {
+    const session = await storage.getSession(request.headers.get("Cookie"));
+    const userId = session.get("userId");
+
+    if (userId) {
+        const user = await db.user.findUnique({
+            where: {id: userId}
+        });
+
+        if (user) {
+            return exclude(user, 'passwordHash');
+        }
+    }
+
+    return redirect("/auth/sign-in");
 }
 
 export async function signOut(request: Request) {

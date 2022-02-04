@@ -6,16 +6,23 @@ import CssBaseline from "@mui/material/CssBaseline";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
-import { Divider, IconButton, Menu, MenuItem } from "@mui/material";
+import { Button, Divider, IconButton, Menu, MenuItem } from "@mui/material";
 import Drawer from "@mui/material/Drawer";
 import SideNav from "~/components/elements/SideNav";
 import Copyright from "~/components/elements/Copyright";
-import { Link, Outlet } from "remix";
+import { Link, LoaderFunction, Outlet, useLoaderData } from "remix";
+import { requireUser } from "~/utils/session.server";
+import { User } from "@prisma/client";
 
 const drawerWidth: number = 300;
 const theme = createTheme();
 
+export let loader: LoaderFunction = async ({request}) => {
+    return await requireUser(request);
+};
+
 export default function MainLayoutHiddenRoute() {
+    const user = useLoaderData<Omit<User, 'passwordHash'>>();
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
     const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -42,13 +49,15 @@ export default function MainLayoutHiddenRoute() {
                         <Divider orientation="vertical" variant="middle" flexItem />
 
                         <div>
-                            <IconButton
+                            <Button
                                 size="large"
                                 onClick={handleMenu}
                                 color="inherit"
+                                endIcon={<AccountCircle />}
                             >
-                                <AccountCircle />
-                            </IconButton>
+                                {user.firstName}
+
+                            </Button>
                             <Menu
                                 anchorEl={anchorEl}
                                 anchorOrigin={{
