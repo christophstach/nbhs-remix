@@ -24,14 +24,6 @@ export const action: ActionFunction = async ({request}) => {
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
 
-    /* await db.user.create({
-        data: {
-            email,
-            passwordHash: await bcrypt.hash(password, parseInt(process.env.BCRYPT_SALT_ROUNDS as string))
-        }
-    })*/
-
-
     if (email && password) {
         const user = await db.user.findUnique({
             where: {
@@ -56,7 +48,7 @@ export const action: ActionFunction = async ({request}) => {
 export default function AuthSignInRoute() {
     const actionData = useActionData<ActionData>();
     const {state} = useTransition();
-    const busy = state === "submitting";
+    const busy = state === "submitting" || state === "loading";
 
     return (
         <Form method="post">
