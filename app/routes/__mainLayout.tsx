@@ -4,7 +4,7 @@ import Box from "@mui/material/Box";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
-import { Button, Divider, Menu, MenuItem } from "@mui/material";
+import { Alert, Button, Divider, Menu, MenuItem, Snackbar } from "@mui/material";
 import Drawer from "@mui/material/Drawer";
 import SideNav from "~/components/SideNav";
 import Copyright from "~/components/Copyright";
@@ -104,6 +104,9 @@ export default function MainLayoutHiddenRoute() {
                 </Box>
                 <Copyright />
             </Box>
+
+
+            <div id="snackbar-portal" />
         </Box>
     );
 }
