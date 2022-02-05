@@ -9,10 +9,10 @@ async function seed() {
     await db.category.deleteMany();
     await db.subCategory.deleteMany();
 
-    const user = await db.user.create({
+    const user1 = await db.user.create({
         data: {
-            email: 'christoph.stach@gmail.com',
-            passwordHash: await bcrypt.hash('123456', parseInt(process.env.BCRYPT_SALT_ROUNDS as string)),
+            email: "christoph.stach@gmail.com",
+            passwordHash: await bcrypt.hash("123456", parseInt(process.env.BCRYPT_SALT_ROUNDS as string)),
             firstName: "Christoph",
             lastName: "Stach",
             roles: [
@@ -25,6 +25,23 @@ async function seed() {
         }
     });
 
+    const user2 = await db.user.create({
+        data: {
+            email: "andreas@finhelp.de",
+            passwordHash: await bcrypt.hash("123456", parseInt(process.env.BCRYPT_SALT_ROUNDS as string)),
+            firstName: "Andreas",
+            lastName: "Jansen",
+            roles: [
+                "ADMIN",
+                // "EXECUTIVE",
+                // "AREA_MANAGER",
+                "PROJECT_MANAGER",
+                // "PR_MANAGER"
+            ]
+        }
+    });
+
+
 
     const area = await db.area.create({
         data: {
@@ -35,14 +52,28 @@ async function seed() {
     const project1 = await db.project.create({
         data: {
             name: "Schulen",
-            managerUserId: user.id
+            managerUserId: user1.id
         }
     });
 
     const project2 = await db.project.create({
         data: {
             name: "Kindergärten",
-            managerUserId: user.id
+            managerUserId: user1.id
+        }
+    });
+
+    const project3 = await db.project.create({
+        data: {
+            name: "Strickverein",
+            managerUserId: user2.id
+        }
+    });
+
+    const project4 = await db.project.create({
+        data: {
+            name: "Yoga im Park",
+            managerUserId: user2.id
         }
     });
 }
