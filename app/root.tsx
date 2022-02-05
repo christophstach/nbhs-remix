@@ -1,10 +1,19 @@
 import { ReactNode, useContext, useEffect } from "react";
-import { Links, LiveReload, Meta, Outlet, Scripts, ScrollRestoration, useCatch } from "remix";
+import { Links, LinksFunction, LiveReload, Meta, Outlet, Scripts, ScrollRestoration, useCatch } from "remix";
 import { withEmotionCache } from "@emotion/react";
 import ServerStyleContext from "./mui/ServerStyleContext";
 import ClientStyleContext from "./mui/ClientStyleContext";
 import theme from "./mui/theme";
+import globalStyleUrl from "./styles/global.css";
 
+export const links: LinksFunction = () => {
+    return [
+        {
+            rel: 'stylesheet',
+            href: globalStyleUrl
+        }
+    ];
+}
 
 interface DocumentProps {
     children: ReactNode;

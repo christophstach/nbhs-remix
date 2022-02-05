@@ -29,11 +29,11 @@ export let loader: LoaderFunction = async ({request}) => {
         return await signOut(request)
     }
 
-    return exclude(user, 'passwordHash');
+    return exclude(user, "passwordHash");
 };
 
 export default function MainLayoutHiddenRoute() {
-    const user = useLoaderData<Omit<User & { projects: Project[] }, 'passwordHash'>>();
+    const user = useLoaderData<Omit<User & { projects: Project[] }, "passwordHash">>();
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
     const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -45,8 +45,7 @@ export default function MainLayoutHiddenRoute() {
     };
 
     return (
-
-        <Box sx={{display: "flex"}}>
+        <Box sx={{display: "flex", height: "100%"}}>
             <AppBar position="fixed" sx={{zIndex: (theme) => theme.zIndex.drawer + 1}}>
                 <Toolbar sx={{gap: "1rem"}}>
                     <Typography variant="h6" noWrap component="div" sx={{flexGrow: 1}}>
@@ -98,9 +97,11 @@ export default function MainLayoutHiddenRoute() {
                     <SideNav user={user} />
                 </Box>
             </Drawer>
-            <Box component="main" sx={{flexGrow: 1, p: 3}}>
+            <Box component="main" sx={{flexGrow: 1, p: 3, display: "flex", flexDirection: "column"}}>
                 <Toolbar />
-                <Outlet />
+                <Box component="div" sx={{display: "flex", flexGrow: 1}}>
+                    <Outlet />
+                </Box>
                 <Copyright />
             </Box>
         </Box>

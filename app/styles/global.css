@@ -1,10 +1,25 @@
+html {
+    height: 100%;
+}
+
 body {
     margin: 0;
     padding: 0;
+
+    height: 100%;
 }
+
 
 .AuthSignInRoute__nbhs_logo,
 .AuthSignOutRoute__nbhs_logo {
     width: 286px;
     height: 90px;
+}
+
+
+.css-yfaipe-MuiDataGrid-root .MuiDataGrid-columnHeader:focus,
+.css-yfaipe-MuiDataGrid-root .MuiDataGrid-cell:focus,
+.css-yfaipe-MuiDataGrid-root .MuiDataGrid-columnHeader:focus-within,
+.css-yfaipe-MuiDataGrid-root .MuiDataGrid-cell:focus-within {
+    outline: none;
 }
