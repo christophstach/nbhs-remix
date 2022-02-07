@@ -1,3 +1,3 @@
 export default function Users$UserId$IndexRoute() {
-    return <>Users$UserIdIndexRoute</>;
+    return <>Users$UserId$IndexRoute</>;
 }

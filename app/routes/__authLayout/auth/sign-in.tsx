@@ -15,7 +15,7 @@ export const meta: MetaFunction = () => {
 };
 
 interface ActionData {
-    errors: string[];
+    errors?: string[];
 }
 
 export const action: ActionFunction = async ({request}) => {
