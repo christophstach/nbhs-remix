@@ -2,7 +2,7 @@ import * as bcrypt from "bcryptjs";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import { Alert, TextField } from "@mui/material";
-import { ActionFunction, Form, MetaFunction, useActionData, useTransition } from "remix";
+import { ActionFunction, Form, json, MetaFunction, useActionData, useTransition } from "remix";
 import LoadingButton from "@mui/lab/LoadingButton";
 import SendIcon from "@mui/icons-material/Send";
 import { db } from "~/utils/db.server";
@@ -15,7 +15,7 @@ export const meta: MetaFunction = () => {
 };
 
 interface ActionData {
-    errors?: string[];
+    formErrors?: string[];
 }
 
 export const action: ActionFunction = async ({request}) => {
@@ -38,11 +38,9 @@ export const action: ActionFunction = async ({request}) => {
         }
     }
 
-    return {
-        errors: [
-            "Wrong credentials"
-        ]
-    } as ActionData;
+    return json({
+        formErrors: ["Wrong credentials"]
+    } as ActionData, {status: 400});
 };
 
 export default function AuthSignInRoute() {
@@ -104,9 +102,9 @@ export default function AuthSignInRoute() {
                     </LoadingButton>
 
                     {
-                        actionData?.errors ? actionData.errors.map(error => (
+                        actionData?.formErrors ? actionData.formErrors.map(error => (
                             <Alert severity="error">{error}</Alert>
-                        )) : <></>
+                        )) : null
                     }
                 </Box>
             </Box>

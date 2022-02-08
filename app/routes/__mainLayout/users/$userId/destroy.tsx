@@ -3,9 +3,7 @@ import { db } from "~/utils/db.server";
 import { User } from "@prisma/client";
 
 interface ActionData {
-    values?: {
-        user: User
-    },
+    values?: User,
     errors?: string[];
 }
 
