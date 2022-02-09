@@ -1,9 +1,19 @@
-import { User } from "@prisma/client";
 import { z } from "zod";
 import { db } from "./db.server";
+import { User } from "@prisma/client";
 
 
-export async function validateCreateUser(user: Partial<User>) {
+interface ValidationResult<T> {
+    success: boolean;
+    values: T;
+    fieldErrors?: {
+        [key: string]: string[];
+    }
+}
+
+export async function validateCreateUser(formData: FormData): Promise<ValidationResult<User>> {
+    const values = Object.fromEntries(formData) as unknown as User;
+
     const schema = z.object({
         email: z
             .string()
@@ -24,16 +34,25 @@ export async function validateCreateUser(user: Partial<User>) {
             .min(6, "Must have at least 6 characters")
     });
 
-    const parsingResult = await schema.safeParseAsync(user);
+    const parsingResult = await schema.safeParseAsync(values);
 
     if (!parsingResult.success) {
-        return parsingResult.error.flatten().fieldErrors;
+        return {
+            values,
+            success: false,
+            fieldErrors: parsingResult.error.flatten().fieldErrors
+        };
     }
 
-    return null;
+    return {
+        values,
+        success: true,
+    };
 }
 
-export async function validateUpdateUser(userId: string, user: Partial<User>) {
+export async function validateUpdateUser(userId: string, formData: FormData): Promise<ValidationResult<User>> {
+    const values = Object.fromEntries(formData) as unknown as User;
+
     const schema = z.object({
         email: z
             .string()
@@ -53,26 +72,20 @@ export async function validateUpdateUser(userId: string, user: Partial<User>) {
             }, "E-Mail Address does already exist in system")
     });
 
-    const parsingResult = await schema.safeParseAsync(user);
+    const parsingResult = await schema.safeParseAsync(values);
 
     if (!parsingResult.success) {
-        return parsingResult.error.flatten().fieldErrors;
+        return {
+            values,
+            success: false,
+            fieldErrors: parsingResult.error.flatten().fieldErrors
+        };
     }
 
-    return null;
+    return {
+        values,
+        success: false
+    };
 }
 
 
-export function formDataToObject<T>(formData: FormData) {
-    const obj: { [key: string]: any } = {};
-
-    formData.forEach((value, key) => {
-        if (value) {
-            obj[key] = value;
-        } else {
-            obj[key] = '';
-        }
-    });
-
-    return obj as T;
-}

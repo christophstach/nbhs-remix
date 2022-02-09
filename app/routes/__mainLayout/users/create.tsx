@@ -2,7 +2,7 @@ import { ActionFunction, Form, json, redirect, useActionData, useTransition } fr
 import { db } from "~/utils/db.server";
 import * as bcrypt from "bcryptjs";
 import { User } from "@prisma/client";
-import { formDataToObject, validateCreateUser } from "~/utils/validators";
+import { validateCreateUser } from "~/utils/validators";
 import { Card, CardActions, CardContent, TextField } from "@mui/material";
 import Box from "@mui/material/Box";
 import LoadingButton from "@mui/lab/LoadingButton";
@@ -18,10 +18,9 @@ export interface ActionData {
 
 export const action: ActionFunction = async ({request}) => {
     const formData = await request.formData();
-    const user = formDataToObject<User>(formData);
-    const fieldErrors = await validateCreateUser(user);
+    const validationResult = await validateCreateUser(formData);
 
-    if (!fieldErrors) {
+    if (validationResult.success) {
         const email = formData.get("email") as string;
         const password = formData.get("password") as string;
         const firstName = formData.get("firstName") as string;
@@ -40,7 +39,10 @@ export const action: ActionFunction = async ({request}) => {
         return redirect(`/users/${user.id}`);
     }
 
-    return json({fieldErrors, values: user} as ActionData, {status: 400});
+    return json({
+        fieldErrors: validationResult.fieldErrors,
+        values: validationResult.values
+    } as ActionData, {status: 400});
 }
 
 

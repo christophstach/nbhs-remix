@@ -14,7 +14,7 @@ import Box from "@mui/material/Box";
 import { Card, CardActions, CardContent, TextField } from "@mui/material";
 import LoadingButton from "@mui/lab/LoadingButton";
 import SaveIcon from "@mui/icons-material/Save";
-import { formDataToObject, validateUpdateUser } from "~/utils/validators";
+import { validateUpdateUser } from "~/utils/validators";
 
 export interface ActionData {
     values?: User,
@@ -27,10 +27,9 @@ export const action: ActionFunction = async ({request, params}) => {
     const userId = params.userId;
 
     if (userId) {
-        const user = formDataToObject<User>(formData);
-        const fieldErrors = await validateUpdateUser(userId, user);
+        const validationResult = await validateUpdateUser(userId, formData);
 
-        if (!fieldErrors) {
+        if (validationResult.success) {
             const email = formData.get("email") as string;
             const firstName = formData.get("firstName") as string;
             const lastName = formData.get("lastName") as string;
@@ -49,7 +48,10 @@ export const action: ActionFunction = async ({request, params}) => {
             return redirect("/users");
         }
 
-        return json({fieldErrors, values: user} as ActionData, {status: 400});
+        return json({
+            fieldErrors: validationResult.fieldErrors,
+            values: validationResult.values
+        } as ActionData, {status: 400});
     }
 
     return new Response("Not found", {status: 404});
